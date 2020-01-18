@@ -5,7 +5,7 @@ import time
 import socket
 from os import linesep as endl
 
-
+import utils
 
 
 def version_message()->str:
@@ -46,16 +46,33 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
     :param messsage_name:
     :return payload_lenght: length of rest of message
     """
+    start=time.time()
     while True:
+        if time.time()-start>10:
+            raise Exception()
         magic_letters = socket.recv(4)
         if magic_letters.hex() == "f9beb4d9":
             command = socket.recv(12).decode("utf-8")
             if messsage_name == command[0:len(messsage_name)]:
                 print("Odebrano zwrotną wiadomość "+messsage_name+endl)
-                payload_lenght=socket.recv(4)
-                payload_lenght=struct.unpack("I",payload_lenght)[0]
+                payload_lenght = get_payload_lenght(socket)
                 socket.recv(4)  # drop checksum
                 return payload_lenght
+            else:
+                drop_message(socket)
+
+
+def get_payload_lenght(socket):
+    payload_lenght = socket.recv(4)
+    payload_lenght = struct.unpack("I", payload_lenght)[0]
+    return payload_lenght
+
+
+def drop_message(socket: socket.socket):
+    payload_lenght = get_payload_lenght(socket)
+    socket.recv(4)  # drop checksum
+    socket.recv(payload_lenght)#drop message
+
 
 def verack_message():
    message= make_header_message("verack",b"")
@@ -64,4 +81,50 @@ def verack_message():
 
 def receive_verack(socket: socket.socket):
     receive_header(socket,"verack")
+
+
+def get_addr():
+    # var_int_adress_number=utils.varint(adress_number)
+    # timestamp=struct.pack("q", int(time.time()))
+    # payload=var_int_adress_number+timestamp
+
+    message=make_header_message("getaddr",b"")
+    return message
+
+
+def receive_addr(socket: socket.socket):
+    payload=receive_header(socket,"addr")
+
+    addr_number = get_addr_number(socket)
+
+    # socket.recv(4)#drop timestamp
+    addr_list=[]
+    for i in range(0,addr_number):
+        socket.recv(4)#drop time
+        socket.recv(8)#drop service
+        socket.recv(12)#drop ipv6
+        ipv4=socket.recv(4)
+
+
+        ipv4=utils.convert_hexip_to_str_ip(ipv4)
+        port_hex=socket.recv(2).hex()
+        port=int(port_hex,16)
+        addr_list.append((ipv4,port))
+    return addr_list
+
+def get_addr_number(socket):
+    var_int_prefix = socket.recv(1)
+    var_int_prefix_hex = int(var_int_prefix.hex(),16)
+    addr_number = 0
+    if var_int_prefix_hex < 0xfd:
+        addr_number = var_int_prefix_hex
+    elif var_int_prefix_hex == 0xfd:
+        addr_number = struct.unpack('<H', socket.recv(2))[0]
+    elif var_int_prefix_hex == 0xfe:
+        addr_number = struct.unpack('<L', socket.recv(4))[0]
+        # return [struct.unpack('<L', payload[1:5])[0], 5]
+    else:
+        addr_number = struct.unpack('<Q', socket.recv(8))[0]
+    return addr_number
+
 

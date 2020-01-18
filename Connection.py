@@ -1,4 +1,6 @@
 import socket
+import time
+from typing import List, Tuple
 
 import Messages
 
@@ -13,6 +15,7 @@ class Connection:
         try:
             # self.socket.settimeout(2000)
             #Tcp Connection
+            self.socket.settimeout(5)
             self.socket.connect((ip_addr, 8333))
             print("Nawiązano połączenie TCP")
 
@@ -37,4 +40,12 @@ class Connection:
         except socket.error:
             print("Nie udało się nawiązać połączenia TCP")
 
+    def get_addr(self):
+        message=Messages.get_addr()
+        self.socket.send(message)
+        print("Wiadomość getaddr wysłana\nOczekuje na odpowiedź...\n")
+
+        addr_list: List[Tuple[str, int]]=Messages.receive_addr(self.socket)
+        for addr in addr_list:
+            print("Adres: "+str(addr[0])+" port:"+str(addr[1]))
 

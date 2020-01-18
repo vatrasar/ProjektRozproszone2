@@ -18,7 +18,8 @@ class Console:
         self.commands_map: Dict[str, Callable[[], None]] = {"ping": self.ping, "help": self.print_commands,
                                                        "ustaw adres": self.set_target_node_adress,
                                                        "polacz": self.connect_to_peer,
-                                                        "dns":self.print_nodes_addres_form_dns}#dostepne w konsoli polecenia
+                                                        "dns":self.print_nodes_addres_form_dns,
+                                                            "getaddr":self.get_addr}#dostepne w konsoli polecenia
 
     def set_target_node_adress(self):
         while True:
@@ -43,6 +44,8 @@ class Console:
         if self.target_node_adress=="":
             self.set_target_node_adress()
         print("Wysyłanie pinga....\n")
+
+        #wysyłanie pinga
         command = ['ping', param, '1', self.target_node_adress]
 
         if subprocess.call(command, stdout=open(os.devnull, 'wb')) == 0:
@@ -55,7 +58,8 @@ class Console:
               "help:pomoc\n"
               "polacz:ustanawia połączenie z wybranym węzłem(wysyła version i verack)\n"
               "ustaw adres:ustawia adres docelowego węzła\n"
-              "dns: wyszukiwanie adresów węzłów za pomocą dns")
+              "dns: wyszukiwanie adresów węzłów za pomocą dns\n"
+              "getaddr: uzyskanie adresów innych węzłow z danego węzła")
     def print_nodes_addres_form_dns(self):
         PeerDiscovery.print_nodes_form_DNS()
 
@@ -65,8 +69,13 @@ class Console:
         self.connection=Connection()
         self.connection.connect_to_node(self.target_node_adress)
 
+    def get_addr(self):
+        if(self.connection==None or not(self.connection.is_connected)):
+            print("Operacja niedostępna. Najepierw musisz nawiązać połaczenie z węzłem.")
+            return
 
 
+        self.connection.get_addr()
 
     def run_console(self):
         self.to_close: bool = False
@@ -74,8 +83,10 @@ class Console:
 
 
             activity = self.get_activity()
-
-            activity()
+            try:
+                activity()
+            except Exception:
+                print("Zby dlugi czas oczekiwania")
 
 
 
