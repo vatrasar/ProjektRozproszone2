@@ -1,15 +1,23 @@
 import os
 import platform
+import socket
 import subprocess
 from typing import Dict, Callable
 import re
 
+import Messages
+from Connection import Connection
 
 
 class Console:
 
     def __init__(self) -> None:
         self.target_node_adress=""
+        self.connection=None  #init in connect_to_peer method
+        self.commands_map: Dict[str, Callable[[], None]] = {"ping": self.ping, "help": self.print_commands,
+                                                       "ustaw adres": self.set_target_node_adress,
+                                                       "polacz": self.connect_to_peer}#dostepne w konsoli polecenia
+
     def set_target_node_adress(self):
         while True:
             adress=input("Podaj adres ip docelowego węzła>")
@@ -41,11 +49,21 @@ class Console:
     def print_commands(self):
         print("ping:wysyłanie pinga\n"
               "help:pomoc\n"
-              "version:wyslanie wiadomosci version\n"
+              "polacz:ustanawia połączenie z wybranym węzłem(wysyła version i verack)\n"
               "ustaw adres:ustawia adres docelowego węzła\n")
+
+    def connect_to_peer(self):
+        if(self.target_node_adress==""):
+            self.set_target_node_adress()
+        self.connection=Connection()
+        self.connection.connect_to_node(self.target_node_adress)
+
+
+
+
     def run_console(self):
-        to_close: bool = False
-        while not(to_close):
+        self.to_close: bool = False
+        while not(self.to_close):
 
 
             activity = self.get_activity()
@@ -57,9 +75,9 @@ class Console:
     def get_activity(self):
        while True:
             command = input("Podaj polecenie>")
-            commands_map: Dict[str, Callable[[], None]] = {"ping": self.ping,"help":self.print_commands,"ustaw adres":self.set_target_node_adress}
 
-            activity = commands_map.get(command)
+
+            activity = self.commands_map.get(command)
             if activity==None:
                 print("Podana nazwa polecenia jest błędna")
                 continue
