@@ -23,6 +23,8 @@ class Console:
             adress=input("Podaj adres ip docelowego węzła>")
             if self.is_address_valid(adress):
                 self.target_node_adress=adress
+                if self.connection!=None:
+                    self.connection.is_connected=False
                 print("Pomyslnie zmieniono adres docelowego wezla\n")
                 break
             else:

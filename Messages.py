@@ -3,6 +3,9 @@ import random
 import struct
 import time
 import socket
+from os import linesep as endl
+
+
 
 
 def version_message()->str:
@@ -23,7 +26,7 @@ def version_message()->str:
     return message
 
 
-def make_header_message(command, payload):
+def make_header_message(command, payload: bytes):
     magic = bytes.fromhex("F9BEB4D9") # Main network
     command = command + (12 - len(command)) * "\00"
     command=str.encode(command)
@@ -32,14 +35,33 @@ def make_header_message(command, payload):
     return magic + command + length + check + payload
 
 def receive_version(socket: socket.socket):
+    payload_lenght=receive_header(socket,"version")
+    socket.recv(payload_lenght)#drop payload(rest of version message)
+    return
+
+def receive_header(socket: socket.socket,messsage_name:str)->int:
+    """
+
+    :param socket:
+    :param messsage_name:
+    :return payload_lenght: length of rest of message
+    """
     while True:
         magic_letters = socket.recv(4)
         if magic_letters.hex() == "f9beb4d9":
             command = socket.recv(12).decode("utf-8")
-            if "version" == command[0:len("version")]:
-                print("Odebrano zwrotną wiadomość version\n")
+            if messsage_name == command[0:len(messsage_name)]:
+                print("Odebrano zwrotną wiadomość "+messsage_name+endl)
                 payload_lenght=socket.recv(4)
                 payload_lenght=struct.unpack("I",payload_lenght)[0]
                 socket.recv(4)  # drop checksum
-                socket.recv(payload_lenght)#drop payload(rest of version message)
-                return
+                return payload_lenght
+
+def verack_message():
+   message= make_header_message("verack",b"")
+   return message
+
+
+def receive_verack(socket: socket.socket):
+    receive_header(socket,"verack")
+
