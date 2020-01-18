@@ -6,6 +6,7 @@ from typing import Dict, Callable
 import re
 
 import Messages
+import PeerDiscovery
 from Connection import Connection
 
 
@@ -16,7 +17,8 @@ class Console:
         self.connection=None  #init in connect_to_peer method
         self.commands_map: Dict[str, Callable[[], None]] = {"ping": self.ping, "help": self.print_commands,
                                                        "ustaw adres": self.set_target_node_adress,
-                                                       "polacz": self.connect_to_peer}#dostepne w konsoli polecenia
+                                                       "polacz": self.connect_to_peer,
+                                                        "dns":self.print_nodes_addres_form_dns}#dostepne w konsoli polecenia
 
     def set_target_node_adress(self):
         while True:
@@ -37,14 +39,14 @@ class Console:
 
 
         param = '-n' if platform.system().lower() == 'windows' else '-c'
-        print("Wysyłanie pinga....\n")
+
         if self.target_node_adress=="":
             self.set_target_node_adress()
-
-        command = ['ping', param, '5', self.target_node_adress]
+        print("Wysyłanie pinga....\n")
+        command = ['ping', param, '1', self.target_node_adress]
 
         if subprocess.call(command, stdout=open(os.devnull, 'wb')) == 0:
-            print("Host został osiągnięty")
+            print("Sukces!")
         else:
             print("Host nie został osiągnięty")
 
@@ -52,7 +54,10 @@ class Console:
         print("ping:wysyłanie pinga\n"
               "help:pomoc\n"
               "polacz:ustanawia połączenie z wybranym węzłem(wysyła version i verack)\n"
-              "ustaw adres:ustawia adres docelowego węzła\n")
+              "ustaw adres:ustawia adres docelowego węzła\n"
+              "dns: wyszukiwanie adresów węzłów za pomocą dns")
+    def print_nodes_addres_form_dns(self):
+        PeerDiscovery.print_nodes_form_DNS()
 
     def connect_to_peer(self):
         if(self.target_node_adress==""):
