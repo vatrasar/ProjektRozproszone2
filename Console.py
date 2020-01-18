@@ -19,7 +19,8 @@ class Console:
                                                        "ustaw adres": self.set_target_node_adress,
                                                        "polacz": self.connect_to_peer,
                                                         "dns":self.print_nodes_addres_form_dns,
-                                                            "getaddr":self.get_addr}#dostepne w konsoli polecenia
+                                                            "getaddr":self.get_addr,
+                                                            "addr":self.addr}#dostepne w konsoli polecenia
 
     def set_target_node_adress(self):
         while True:
@@ -85,7 +86,7 @@ class Console:
             activity = self.get_activity()
             try:
                 activity()
-            except Exception:
+            except IndexError:
                 print("Zby dlugi czas oczekiwania")
 
 
@@ -100,6 +101,28 @@ class Console:
                 print("Podana nazwa polecenia jest błędna")
                 continue
             return activity
+    def addr(self):
+        if (self.connection == None or not (self.connection.is_connected)):
+            print("Operacja niedostępna. Najepierw musisz nawiązać połaczenie z węzłem.")
+            return
+        ip=None
+        port=None
+        while True:
+            adress = input("Podaj adres ip do wysłania>")
+            if self.is_address_valid(adress):
+                ip = adress
+                break
+            else:
+                print("Podano nieprawidlowy adres ip")
+
+        while True:
+            port_: str = input("Podaj numer portu>")
+            if port_.isnumeric():
+                port = port_
+                break
+            else:
+                print("Podano zły numer portu")
+        self.connection.addr(ip,port)
 
 
 

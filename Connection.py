@@ -48,4 +48,7 @@ class Connection:
         addr_list: List[Tuple[str, int]]=Messages.receive_addr(self.socket)
         for addr in addr_list:
             print("Adres: "+str(addr[0])+" port:"+str(addr[1]))
+    def addr(self,ip,port):
+        self.socket.send(Messages.addr(ip,port))
+        print("Wiadomość addr pomyślnie wysłana")
 

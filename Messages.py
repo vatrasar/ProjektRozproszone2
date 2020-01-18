@@ -24,7 +24,12 @@ def version_message()->str:
     payload = version + services + timestamp + addr_recv + addr_from + nonce +user_agent_bytes + height
     message=make_header_message("version",payload)
     return message
-
+def pack_addr(ip,port_number):
+    stime = struct.pack("I", int(time.time()))
+    addr_recv = struct.pack("Q", 0)
+    addr_recv += struct.pack(">16s", str.encode(ip))
+    addr_recv += struct.pack(">H", int(port_number))
+    return stime+addr_recv
 
 def make_header_message(command, payload: bytes):
     magic = bytes.fromhex("F9BEB4D9") # Main network
@@ -49,7 +54,7 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
     start=time.time()
     while True:
         if time.time()-start>10:
-            raise Exception()
+            raise IndexError()
         magic_letters = socket.recv(4)
         if magic_letters.hex() == "f9beb4d9":
             command = socket.recv(12).decode("utf-8")
@@ -84,14 +89,17 @@ def receive_verack(socket: socket.socket):
 
 
 def get_addr():
-    # var_int_adress_number=utils.varint(adress_number)
-    # timestamp=struct.pack("q", int(time.time()))
-    # payload=var_int_adress_number+timestamp
+
 
     message=make_header_message("getaddr",b"")
     return message
 
 
+def addr(ip_addres,port):
+    var_int_adress_number=utils.varint(1)
+    # timestamp=struct.pack("q", int(time.time()))
+    payload=var_int_adress_number+pack_addr(ip_addres,port)
+    return make_header_message("addr",payload)
 def receive_addr(socket: socket.socket):
     payload=receive_header(socket,"addr")
 
