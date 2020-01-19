@@ -6,18 +6,23 @@ import Messages
 
 
 class Connection:
-    def __init__(self) -> None:
+    def __init__(self,connection_type) -> None:
         self.is_connected=False #when send and received version and verack to node
         self.socket=None
+        self.connection_type=connection_type
+
 
     def connect_to_node(self, ip_addr: str):
-        self.socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket=socket.socket(socket.AF_INET, self.connection_type)
         try:
             # self.socket.settimeout(2000)
             #Tcp Connection
             self.socket.settimeout(5)
             self.socket.connect((ip_addr, 8333))
-            print("Nawiązano połączenie TCP")
+            if socket.SOCK_STREAM==self.connection_type:
+                print("Nawiązano połączenie TCP")
+            else:
+                print("Nawiązano połączenie UDP")
 
             #version message
             message_version=Messages.version_message()
@@ -37,8 +42,13 @@ class Connection:
 
 
 
-        except socket.error:
-            print("Nie udało się nawiązać połączenia TCP")
+        except socket.error as err:
+            print(err)
+            if socket.SOCK_STREAM==self.connection_type:
+                print("Nie udało się nawiązać połączenia TCP")
+            else:
+                print("Nie udało się nawiązać połączenia UDP")
+
 
     def get_addr(self):
         message=Messages.get_addr()

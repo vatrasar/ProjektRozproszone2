@@ -14,13 +14,17 @@ class Console:
 
     def __init__(self) -> None:
         self.target_node_adress=""
+        self.connection_type=socket.SOCK_STREAM#tcp default
+
         self.connection=None  #init in connect_to_peer method
         self.commands_map: Dict[str, Callable[[], None]] = {"ping": self.ping, "help": self.print_commands,
                                                        "ustaw adres": self.set_target_node_adress,
                                                        "polacz": self.connect_to_peer,
                                                         "dns":self.print_nodes_addres_form_dns,
                                                             "getaddr":self.get_addr,
-                                                            "addr":self.addr}#dostepne w konsoli polecenia
+                                                            "addr":self.addr,
+                                                            "udp":self.set_udp,
+                                                            "tcp":self.set_tcp}#dostepne w konsoli polecenia
 
     def set_target_node_adress(self):
         while True:
@@ -67,7 +71,7 @@ class Console:
     def connect_to_peer(self):
         if(self.target_node_adress==""):
             self.set_target_node_adress()
-        self.connection=Connection()
+        self.connection=Connection(self.connection_type)
         self.connection.connect_to_node(self.target_node_adress)
 
     def get_addr(self):
@@ -90,7 +94,19 @@ class Console:
                 print("Zby dlugi czas oczekiwania")
 
 
+    def set_udp(self):
 
+        self.connection_type=socket.SOCK_DGRAM
+        if self.connection!=None:
+            self.connection.is_connected=False
+        print("Połaczeni bedzie teraz realizowane przy pomocy UDP")
+    def set_tcp(self):
+
+        self.connection_type=socket.SOCK_STREAM
+        if self.connection!=None:
+            self.connection.is_connected=False
+
+        print("Połaczeni bedzie teraz realizowane przy pomocy TCP")
     def get_activity(self):
        while True:
             command = input("Podaj polecenie>")
