@@ -24,7 +24,11 @@ class Console:
                                                             "getaddr":self.get_addr,
                                                             "addr":self.addr,
                                                             "udp":self.set_udp,
-                                                            "tcp":self.set_tcp}#dostepne w konsoli polecenia
+                                                            "tcp":self.set_tcp,
+                                                            "getheaders":self.get_headers,
+                                                            "getblocks":self.get_blcoks,
+                                                            "getdata":self.get_data,
+                                                            "inv":self.inv}#dostepne w konsoli polecenia
 
     def set_target_node_adress(self):
         while True:
@@ -64,7 +68,11 @@ class Console:
               "polacz:ustanawia połączenie z wybranym węzłem(wysyła version i verack)\n"
               "ustaw adres:ustawia adres docelowego węzła\n"
               "dns: wyszukiwanie adresów węzłów za pomocą dns\n"
-              "getaddr: uzyskanie adresów innych węzłow z danego węzła")
+              "getaddr: uzyskanie adresów innych węzłow z danego węzła\n"
+              "getheaders: wyswietla nagłówki\n"
+              "getblocks: wyświetla bloki\n"
+              "getdata: wyświetla dane\n"
+              "inv:\n")
     def print_nodes_addres_form_dns(self):
         PeerDiscovery.print_nodes_form_DNS()
 
@@ -139,6 +147,30 @@ class Console:
             else:
                 print("Podano zły numer portu")
         self.connection.addr(ip,port)
+
+    def inv(self):
+        if (self.connection == None or not (self.connection.is_connected)):
+            print("Operacja niedostępna. Najepierw musisz nawiązać połaczenie z węzłem.")
+            return
+        self.connection.inv()
+
+    def get_blcoks(self):
+        if (self.connection == None or not (self.connection.is_connected)):
+            print("Operacja niedostępna. Najepierw musisz nawiązać połaczenie z węzłem.")
+            return
+        self.connection.get_blocks()
+
+    def get_headers(self):
+        if (self.connection == None or not (self.connection.is_connected)):
+            print("Operacja niedostępna. Najepierw musisz nawiązać połaczenie z węzłem.")
+            return
+        self.connection.get_headers()
+
+    def get_data(self):
+        if (self.connection == None or not (self.connection.is_connected)):
+            print("Operacja niedostępna. Najepierw musisz nawiązać połaczenie z węzłem.")
+            return
+        self.connection.get_data()
 
 
 

@@ -62,3 +62,14 @@ class Connection:
         self.socket.send(Messages.addr(ip,port))
         print("Wiadomość addr pomyślnie wysłana")
 
+    def inv(self):
+        print("Wiadomść inv wysłana")
+
+    def get_blocks(self):
+        print("Wiadomść getBlocks wysłana")
+
+    def get_headers(self):
+        print("Wiadomść getHeaders wysłana")
+
+    def get_data(self):
+        print("Wiadomść getData wysłana")
