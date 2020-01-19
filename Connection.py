@@ -7,7 +7,7 @@ import Messages
 
 class Connection:
     def __init__(self,connection_type) -> None:
-        self.is_connected=False #when send and received version and verack to node
+        self.is_connected=False  #when send and received version and verack to node
         self.socket=None
         self.connection_type=connection_type
 
@@ -21,8 +21,8 @@ class Connection:
             self.socket.connect((ip_addr, 8333))
             if socket.SOCK_STREAM==self.connection_type:
                 print("Nawiązano połączenie TCP")
-            else:
-                print("Nawiązano połączenie UDP")
+            # else:
+            #     print("Nawiązano połączenie UDP")
 
             #version message
             message_version=Messages.version_message()
