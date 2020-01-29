@@ -130,7 +130,7 @@ def receive_addr(socket: socket.socket):
 
 	payload=receive_header(socket,"addr")
 
-	addr_number = get_addr_number(socket)
+	addr_number = utils.get_varInt_number(socket)
 
 	# socket.recv(4)#drop timestamp
 	addr_list=[]
@@ -147,20 +147,7 @@ def receive_addr(socket: socket.socket):
 		addr_list.append((ipv4,port))
 	return addr_list
 
-def get_addr_number(socket):
-	var_int_prefix = socket.recv(1)
-	var_int_prefix_hex = int(var_int_prefix.hex(),16)
-	addr_number = 0
-	if var_int_prefix_hex < 0xfd:
-		addr_number = var_int_prefix_hex
-	elif var_int_prefix_hex == 0xfd:
-		addr_number = struct.unpack('<H', socket.recv(2))[0]
-	elif var_int_prefix_hex == 0xfe:
-		addr_number = struct.unpack('<L', socket.recv(4))[0]
-		# return [struct.unpack('<L', payload[1:5])[0], 5]
-	else:
-		addr_number = struct.unpack('<Q', socket.recv(8))[0]
-	return addr_number
+
 	
 	
 	
@@ -196,3 +183,6 @@ def getdata_message(tx_hash)->str:
 def pong_message(nonce)->str:
 	message=make_header_message("pong",nonce)
 	return message
+
+
+

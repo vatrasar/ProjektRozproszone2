@@ -2,6 +2,7 @@ import os
 import platform
 import socket
 import subprocess
+import sys
 from typing import Dict, Callable
 import re
 
@@ -194,6 +195,8 @@ class Console:
 
 
 if __name__ == '__main__':
+
+
 	console=Console()
 	console.run_console()
 

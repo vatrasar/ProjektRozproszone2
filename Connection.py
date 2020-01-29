@@ -96,5 +96,6 @@ class Connection:
 			if Messages.receive_header(self.socket, "tx"):
 				Encode.encode_transaction(self.socket)
 				break
+
 			self.socket.send(bytes(message_getdata))
 			print("Wysłano wiadomość getdata")
