@@ -61,7 +61,8 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
 		magic_letters = socket.recv(4)
 		if magic_letters.hex() == "f9beb4d9":
 			command = socket.recv(12).decode("utf-8")
-			print("Jest wiadomość…"+str(command))
+
+			print("Jest wiadomość…" + get_command_name(command))
 			com=str(command)
 			# if com=='ping':
 			# 	socket.send(bytes(pong_message(socket.recv(8))))
@@ -74,6 +75,15 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
 			else:
 				drop_message(socket)
 				#return 0
+
+
+def get_command_name(command):
+	"""
+
+	:param command:
+	:return: command without no empty signs
+	"""
+	return str(command)[0:max(int(command.find("\0")), 0)]
 
 
 def get_payload_lenght(socket):
