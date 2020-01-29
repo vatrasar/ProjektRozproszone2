@@ -100,6 +100,8 @@ class Console:
 				activity()
 			except IndexError:
 				print("Zby dlugi czas oczekiwania")
+			except socket.error as err:
+				print("Czas na odpowiedź minął")
 
 
 	def set_udp(self):

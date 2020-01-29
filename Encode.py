@@ -46,7 +46,7 @@ def encode_transaction(socket):
 		length_str = int.from_bytes(socket.recv(3),byteorder='little')
 		off = math.floor(length_str/1024)
 		for i in range(0, off):
-			socket.recv(1024)
+			a=socket.recv(1024)
 		socket.recv(length_str-(1024*off))
 		i = 1
 		while i < num_of_inputs:
@@ -57,7 +57,7 @@ def encode_transaction(socket):
 			length_str = int.from_bytes(socket.recv(3),byteorder='little')
 			off = math.floor(length_str/1024)
 			for i in range(0, off):
-				socket.recv(1024)
+				a=socket.recv(1024)
 			socket.recv(length_str-(1024*off))
 			
 			print("Wersja wiadomości wysyłającego: "+str(int.from_bytes(socket.recv(4),byteorder='little')))

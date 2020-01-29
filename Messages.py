@@ -55,29 +55,26 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
 	"""
 	start=time.time()
 	while True:
-		try:
-			if time.time()-start>10:
-				return
-				raise IndexError()
-			magic_letters = socket.recv(4)
-			if magic_letters.hex() == "f9beb4d9":
-				command = socket.recv(12).decode("utf-8")
-				print("Jest wiadomość…"+str(command))
-				com=str(command)
-				if com=='ping':
-					socket.send(bytes(pong_message(socket.recv(8))))
-					print("Wysłano wiadomość pong")
-				if messsage_name == command[0:len(messsage_name)]:
-					print("Odebrano zwrotną wiadomość "+messsage_name+endl)
-					payload_lenght = get_payload_lenght(socket)
-					socket.recv(4)  # drop checksum
-					return payload_lenght
-				else:
-					drop_message(socket)
-					#return 0
-		except socket.timeout:
-			print("Didn't receive data! [Timeout 5s]")
-			continue
+
+		if time.time()-start>10:
+			return
+			raise IndexError()
+		magic_letters = socket.recv(4)
+		if magic_letters.hex() == "f9beb4d9":
+			command = socket.recv(12).decode("utf-8")
+			print("Jest wiadomość…"+str(command))
+			com=str(command)
+			if com=='ping':
+				socket.send(bytes(pong_message(socket.recv(8))))
+				print("Wysłano wiadomość pong")
+			if messsage_name == command[0:len(messsage_name)]:
+				print("Odebrano zwrotną wiadomość "+messsage_name+endl)
+				payload_lenght = get_payload_lenght(socket)
+				socket.recv(4)  # drop checksum
+				return payload_lenght
+			else:
+				drop_message(socket)
+				#return 0
 
 
 def get_payload_lenght(socket):

@@ -16,7 +16,7 @@ class Connection:
 	def connect_to_node(self, ip_addr: str):
 		self.socket=socket.socket(socket.AF_INET, self.connection_type)
 		try:
-			self.socket.settimeout(5)
+			self.socket.settimeout(10)
 			#Tcp Connection
 			self.socket.connect((ip_addr, 8333))
 			if socket.SOCK_STREAM==self.connection_type:
