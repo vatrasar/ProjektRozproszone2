@@ -36,8 +36,8 @@ def convert_to_str(ip_part: bytes):
     a=ip_part.hex()
     hex_as_decimal=int(a,16)
     decimal_hex_as_str=str(hex_as_decimal)
-    if len(decimal_hex_as_str)<3:
-        zero_number=3-len(decimal_hex_as_str)
-        zeros="0"*zero_number
-        decimal_hex_as_str=zeros+decimal_hex_as_str
+    # if len(decimal_hex_as_str)<3:
+    #     zero_number=3-len(decimal_hex_as_str)
+    #     zeros="0"*zero_number
+    #     decimal_hex_as_str=zeros+decimal_hex_as_str
     return decimal_hex_as_str

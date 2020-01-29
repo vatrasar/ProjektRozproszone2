@@ -64,9 +64,9 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
 			command = socket.recv(12).decode("utf-8")
 			print("Jest wiadomość…"+str(command))
 			com=str(command)
-			if com=='ping':
-				socket.send(bytes(pong_message(socket.recv(8))))
-				print("Wysłano wiadomość pong")
+			# if com=='ping':
+			# 	socket.send(bytes(pong_message(socket.recv(8))))
+			# 	print("Wysłano wiadomość pong")
 			if messsage_name == command[0:len(messsage_name)]:
 				print("Odebrano zwrotną wiadomość "+messsage_name+endl)
 				payload_lenght = get_payload_lenght(socket)
@@ -85,9 +85,9 @@ def get_payload_lenght(socket):
 
 def drop_message(socket: socket.socket):
 	payload_lenght = get_payload_lenght(socket)
-	clear_buffer(socket)
-	#socket.recv(4)  # drop checksum
-	#socket.recv(payload_lenght)#drop message
+	# clear_buffer(socket)
+	socket.recv(4)  # drop checksum
+	socket.recv(payload_lenght)#drop message
 
 def clear_buffer(sock):
 	try:
@@ -117,6 +117,8 @@ def addr(ip_addres,port):
 	payload=var_int_adress_number+pack_addr(ip_addres,port)
 	return make_header_message("addr",payload)
 def receive_addr(socket: socket.socket):
+
+
 	payload=receive_header(socket,"addr")
 
 	addr_number = get_addr_number(socket)
