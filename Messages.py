@@ -56,9 +56,8 @@ def receive_header(socket: socket.socket,messsage_name:str)->int:
 	start=time.time()
 	while True:
 
-		if time.time()-start>10:
-			return
-			raise IndexError()
+		# if time.time()-start>9:
+		# 	raise IndexError()
 		magic_letters = socket.recv(4)
 		if magic_letters.hex() == "f9beb4d9":
 			command = socket.recv(12).decode("utf-8")
