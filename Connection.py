@@ -4,6 +4,7 @@ from typing import List, Tuple
 import binascii
 import Encode
 import Messages
+from exceptions import UnexpectedInV
 
 
 class Connection:
@@ -68,10 +69,16 @@ class Connection:
 		self.socket.send(bytes(message_getblocks))
 		print("Wysłano wiadomość getblocks")
 		time.sleep(3)
-		for i in range(0,2):
-			if Messages.receive_header(self.socket, "inv"):
-				break
-		Encode.encode_inv(self.socket)
+		while True:
+			try:
+				for i in range(0,2):
+					if Messages.receive_header(self.socket, "inv"):
+						break
+				Encode.encode_inv(self.socket)
+				break #everything ok
+			except UnexpectedInV:
+				continue
+
 		#hash of gensis block: 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
 
 	def get_headers(self):

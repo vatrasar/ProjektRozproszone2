@@ -7,6 +7,7 @@ from os import linesep as endl
 import binascii
 import utils
 import math
+import exceptions
 
 def encode_inv(socket):
 	num_of_inputs = int.from_bytes(socket.recv(1),byteorder='little')
@@ -20,7 +21,8 @@ def encode_inv(socket):
 		elif msg_type == 2:
 			print("Hash bloku "+str(i)+":")
 		else:
-			print("Rodzaj wiadomosci: "+str(msg_type)+"\nHash: ")
+			# print("Rodzaj wiadomosci: "+str(msg_type)+"\nHash: ")
+			raise exceptions.UnexpectedInV()
 		msg_hash = socket.recv(32)
 		print(str(binascii.hexlify(msg_hash)))
 		i = i + 1
