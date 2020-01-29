@@ -101,11 +101,11 @@ def encode_transaction(socket):
 		print("Wyjscie " + str(i))
 		value_b=socket.recv(8)
 		value=struct.unpack("q", value_b)[0]
-		print("Wartość:"+str(value))
+		value=value/100000000
+		print("Wartość:"+str(value)+" BTC")
 		script_lenght=utils.get_varInt_number(socket)
 
 		socket.recv(script_lenght)#drop script
-		socket.recv(4)#drop sequence
 	is_close=struct.unpack("I",socket.recv(4))[0]
 	if(is_close==0):
 		print("Transakcja jest zamknieta")

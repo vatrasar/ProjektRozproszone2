@@ -68,10 +68,10 @@ class Connection:
 		message_getblocks=Messages.getblocks_message()
 		self.socket.send(bytes(message_getblocks))
 		print("Wysłano wiadomość getblocks")
-		time.sleep(3)
+		#time.sleep(3)
 		while True:
 			try:
-				for i in range(0,2):
+				for i in range(0,1):
 					if Messages.receive_header(self.socket, "inv"):
 						break
 				Encode.encode_inv(self.socket)
@@ -91,7 +91,7 @@ class Connection:
 		message_getdata = Messages.getdata_message(tx_id)
 		self.socket.send(bytes(message_getdata))
 		print("Wysłano wiadomość getdata")
-		time.sleep(3)
+		#time.sleep(3)
 		while True:
 			if Messages.receive_header(self.socket, "tx"):
 				Encode.encode_transaction(self.socket)
