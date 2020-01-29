@@ -98,9 +98,10 @@ class Console:
 			activity = self.get_activity()
 			try:
 				activity()
-			except IndexError:
+			except TimeoutError:
 				print("Zby dlugi czas oczekiwania")
 			except socket.error as err:
+				print(err)
 				print("Czas na odpowiedź minął")
 
 

@@ -16,13 +16,14 @@ class Connection:
 	def connect_to_node(self, ip_addr: str):
 		self.socket=socket.socket(socket.AF_INET, self.connection_type)
 		try:
-			self.socket.settimeout(10)
+			self.socket.settimeout(5)
 			#Tcp Connection
 			self.socket.connect((ip_addr, 8333))
 			if socket.SOCK_STREAM==self.connection_type:
 				print("Nawiązano połączenie TCP")
 			# else:
 			#     print("Nawiązano połączenie UDP")
+			self.socket.settimeout(None)
 
 			#version message
 			message_version=Messages.version_message()
@@ -38,6 +39,8 @@ class Connection:
 
 			self.is_connected=True
 			print("Ustanowiono połaczenie, można wysyłać wiadomości do węzła\n")
+		except TimeoutError:
+			print("Czas na zwrocenie wiadomosci minął")
 		except socket.error as err:
 			print(err)
 			if socket.SOCK_STREAM==self.connection_type:
