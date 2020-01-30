@@ -8,6 +8,7 @@ import binascii
 import utils
 import math
 import exceptions
+import datetime
 
 def encode_inv(socket):
 	num_of_inputs = int.from_bytes(socket.recv(1),byteorder='little')
@@ -87,10 +88,11 @@ def encode_transaction(socket):
 		print("Index: "+str(index))
 		if int.from_bytes(tx_hash,byteorder='little' )==0:
 			print("Ta transakcja jest pierwszą w bloku")
-		signature_lenght=utils.get_varInt_number(socket)
-
-		socket.recv(signature_lenght)#drop signature
-
+			script_lenght=utils.get_varInt_number(socket)
+			socket.recv(script_lenght)
+		else:	
+			signature_lenght=utils.get_varInt_number(socket)
+			socket.recv(signature_lenght)#drop signature
 		socket.recv(4)# drop sequence
 
 
@@ -133,4 +135,21 @@ def encode_transaction(socket):
 		# 	#
 		# 	# print("Wersja wiadomości wysyłającego: "+str(int.from_bytes(socket.recv(4),byteorder='little')))
 		# 	i = i + 1
-
+		
+def encode_headers(socket):
+	num_of_block_header=utils.get_varInt_number(socket)
+	for i in range(0, num_of_block_header):
+		socket.recv(4) #version
+		print("Blok nagłówków: "+str(i))
+		prev_hash = socket.recv(32)
+		print("Hash poprzedniego bloku nagłówków: "+str(binascii.hexlify(prev_hash)))
+		merkle_hash = socket.recv(32)
+		print("Merkle root hash: "+str(binascii.hexlify(merkle_hash)))
+		witness_hash = socket.recv(32)
+		print("Witness merkle root hash: "+str(binascii.hexlify(witness_hash)))
+		finalizer_hash = socket.recv(32)
+		print("Finalizer commits merkle root: "+str(binascii.hexlify(finalizer_hash)))
+		time_miner = int.from_bytes(socket.recv(4),byteorder='little')
+		date = datetime.datetime.fromtimestamp(time_miner)
+		print("Czas rozpoczęcia hashowania nagłówka przez górnika: "+str(date))
+		socket.recv(4)

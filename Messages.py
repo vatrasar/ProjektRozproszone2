@@ -171,6 +171,15 @@ def getblocks_message()->str:
 	payload = version + hash_count + block_header_hashes + stop_hash
 	message=make_header_message("getblocks",payload)
 	return message
+	
+def getheaders_message()->str:
+	version = struct.pack("i", 60002)
+	hash_count = struct.pack("<B", 1)
+	block_header_hashes = binascii.unhexlify('000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f')
+	stop_hash = struct.pack("<32s",str.encode('00000000000000000000000000000000'))
+	payload = version + hash_count + block_header_hashes + stop_hash
+	message=make_header_message("getheaders",payload)
+	return message
 
 def getdata_message(tx_hash)->str:
 	hash_count = struct.pack("<B", 1)

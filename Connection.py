@@ -82,7 +82,19 @@ class Connection:
 		#hash of gensis block: 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
 
 	def get_headers(self):
-		print("Wiadomść getHeaders wysłana")
+		message_getheaders=Messages.getheaders_message()
+		self.socket.send(bytes(message_getheaders))
+		print("Wysłano wiadomość getheaders")
+		while True:
+			try:
+				for i in range(0,1):
+					if Messages.receive_header(self.socket, "headers"):
+						break
+				Encode.encode_headers(self.socket)
+				break #everything ok
+			except UnexpectedInV:
+				continue
+		print("Wiadomść headers odebrana")
 
 	def get_data(self, tx_id):
 		magic_value = 0xd9b4bef9
@@ -96,6 +108,5 @@ class Connection:
 			if Messages.receive_header(self.socket, "tx"):
 				Encode.encode_transaction(self.socket)
 				break
-
 			self.socket.send(bytes(message_getdata))
 			print("Wysłano wiadomość getdata")
